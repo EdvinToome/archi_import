@@ -27,13 +27,12 @@ def get_all_children(children, element):
     return children
 
 def add_data(sid, type, name, ipv4, os, vpc, stage, eol):
-    print(sid,type,name,ipv4,os,vpc,stage,eol)
+#    print(sid,type,name,ipv4,os,vpc,stage,eol)
     try: 
         cur.execute("INSERT INTO archi_import (sid, type, name, ipv4, os, vpc, stage, eol) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (sid, type, name, ipv4, os, vpc, stage, eol)) 
     except mariadb.Error as e: 
         print(f"Error adding data to MariaDB: {e}")
     conn.commit() 
-
 
 
 tree = ET.parse('eits_demo.archimate')
@@ -46,10 +45,12 @@ for child in children:
     name = str(child.get("name"))
     formattedType = type.split(":")
     type = formattedType[1]
+    id = str(child.get("id"))
     if(name == "None"):
         name = None
+    if type == "RealizationRelationship" or type == "AssignmentRelationship" or type == "ServingRelationship" or type == "AssociationRelationship" or type == "Connection" or type == "DiagramObject": 
+        continue
 
-    id = str(child.get("id"))
     property_value = [None, None, None, None, None]
     property_key = ["IPv4", "OS", "VPC", "Stage", "EOL"]
     for property in child:
